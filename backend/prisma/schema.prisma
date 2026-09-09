@@ -12,6 +12,11 @@ datasource db {
   provider = "mysql"
 }
 
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
 model User {
   id           Int       @id @default(autoincrement())
   email        String    @unique
@@ -41,8 +46,39 @@ model Pet {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  owner User @relation(fields: [ownerId], references: [id])
+  owner User   @relation(fields: [ownerId], references: [id])
+  posts Post[]
 
   @@index([ownerId])
+  @@index([deletedAt])
+}
+
+model Post {
+  id        Int       @id @default(autoincrement())
+  petId     Int
+  content   String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  pet   Pet     @relation(fields: [petId], references: [id], onDelete: Cascade)
+  media Media[]
+
+  @@index([petId])
+  @@index([createdAt])
+  @@index([deletedAt])
+}
+
+model Media {
+  id        Int       @id @default(autoincrement())
+  postId    Int
+  type      MediaType
+  url       String
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
   @@index([deletedAt])
 }
