@@ -13,15 +13,18 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
   passwordHash String
   firstName    String
   lastName     String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
 
   pets Pet[]
+
+  @@index([deletedAt])
 }
 
 model Pet {
@@ -36,8 +39,10 @@ model Pet {
   avatarUrl String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   owner User @relation(fields: [ownerId], references: [id])
 
   @@index([ownerId])
+  @@index([deletedAt])
 }
